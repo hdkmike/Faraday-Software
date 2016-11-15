@@ -306,7 +306,7 @@ class MessageAppRx(object):
         # File Variables
         self.rxfilename = ''
         self.rxfilename_length = 0
-        self.filesize = 0
+        self.rxfilesize = 0
 
     def getnextframe(self):
         """
@@ -337,7 +337,7 @@ class MessageAppRx(object):
             if packet_identifier == 255:
                 print len(packet[0:40])
                 unpacked_packet = self.pkt_start.unpack(packet[0:40])  # Why do I need to extract from size 41? Bug?
-                self.filesize = unpacked_packet[3]
+                self.rxfilesize = unpacked_packet[3]
                 self.rxfilename_length = unpacked_packet[4]
                 self.rxfilename = unpacked_packet[5]
                 # print unpacked_packet
@@ -356,9 +356,12 @@ class MessageAppRx(object):
                 message_assembled = self.faraday_Rx_SM.frameassembler(253, unpacked_packet)
 
                 # Save File
-                save_file = open('Received_Files/' + self.rxfilename[0:int(self.rxfilename_length)], 'wb')
-                save_file.write(repr(message_assembled['message']))
-                save_file.close()
+                if self.rxfilesize == len(message_assembled['message']):
+                    save_file = open('Received_Files/' + self.rxfilename[0:int(self.rxfilename_length)], 'wb')
+                    save_file.write(message_assembled['message'])
+                    save_file.close()
+                else:
+                    print "ERROR File Size Mismatch!", self.rxfilesize, len(message_assembled['message'])
 
                 # Return
                 return message_assembled
