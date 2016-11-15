@@ -23,6 +23,7 @@ print "File size (Bytes):", os.stat(filename).st_size
 f = open(filename, "rb")
 message = f.read(int(os.stat(filename).st_size))
 
+
 # Create message fragments
 faraday_tx_msg_sm.createmsgpackets('kb1lqd', 1, message, filename)
 

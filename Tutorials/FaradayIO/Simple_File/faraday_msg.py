@@ -31,7 +31,7 @@ class MsgStateMachineTx(object):
         self.list_packets = []
         # Frame Definitions
         self.pkt_datagram_frame = struct.Struct('1B 40s')  # Fixed
-        self.pkt_start = struct.Struct('9s 4B 27s')  # Fixed
+        self.pkt_start = struct.Struct('9s 2B 1I 1B 23s')  # Fixed
         self.pkt_data = struct.Struct('2B 38s')  # Variable  Data Length
         self.pkt_end = struct.Struct('1B')  # Fixed
 
@@ -124,10 +124,10 @@ class MsgStateMachineTx(object):
         :Return: A START packet
         """
         # Calculate the number of fragmented packets
-        frag_cnt = self.fragmentcount(file_len)
-        print frag_cnt
+        #frag_cnt = self.fragmentcount(file_len)
+        #print frag_cnt
         # Create packet
-        packet = self.pkt_start.pack(src_call, len(src_call), src_id, frag_cnt, len(filename), filename)
+        packet = self.pkt_start.pack(src_call, len(src_call), src_id, file_len, len(filename), filename)
         # Return packet created
         return packet
 
@@ -234,6 +234,7 @@ class MsgStateMachineRx(object):
         self.message = ''
         self.rx_station = ''
 
+
     def changestate(self, state):
         """
         A simple function used to change the class object state machine state.
@@ -299,9 +300,13 @@ class MessageAppRx(object):
         # Initialize variables
         # Frame Definitions (Should be combined later with TX?)
         self.pkt_datagram_frame = struct.Struct('1B 41s')  # Fixed
-        self.pkt_start = struct.Struct('9s 3B')  # Fixed
+        self.pkt_start = struct.Struct('9s 2B 1I 1B 23s')  # Fixed
         self.pkt_data = struct.Struct('2B 39s')  # Variable  Data Length
         self.pkt_end = struct.Struct('1B')  # Fixed
+        # File Variables
+        self.rxfilename = ''
+        self.rxfilename_length = 0
+        self.filesize = 0
 
     def getnextframe(self):
         """
@@ -330,7 +335,13 @@ class MessageAppRx(object):
         try:
             # Start Packet
             if packet_identifier == 255:
-                unpacked_packet = self.pkt_start.unpack(packet[0:12])
+                print len(packet[0:40])
+                unpacked_packet = self.pkt_start.unpack(packet[0:40])  # Why do I need to extract from size 41? Bug?
+                self.filesize = unpacked_packet[3]
+                self.rxfilename_length = unpacked_packet[4]
+                self.rxfilename = unpacked_packet[5]
+
+                print self.filesize, self.rxfilename_length, self.rxfilename
                 # print unpacked_packet
                 self.faraday_Rx_SM.frameassembler(255, unpacked_packet)
                 return None
