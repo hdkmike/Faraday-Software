@@ -31,7 +31,7 @@ class MsgStateMachineTx(object):
         self.list_packets = []
         # Frame Definitions
         self.pkt_datagram_frame = struct.Struct('1B 40s')  # Fixed
-        self.pkt_start = struct.Struct('9s 3B')  # Fixed
+        self.pkt_start = struct.Struct('9s 4B 27s')  # Fixed
         self.pkt_data = struct.Struct('2B 38s')  # Variable  Data Length
         self.pkt_end = struct.Struct('1B')  # Fixed
 
@@ -70,7 +70,7 @@ class MsgStateMachineTx(object):
         print repr(list_message_fragments)
         return list_message_fragments
 
-    def createmsgpackets(self, src_call, src_id, msg):
+    def createmsgpackets(self, src_call, src_id, file_data, filename):
         """
         This function is the high level fragmentation creation function that accepts a message/data and a source
         callsign/ID. The source callsign/ID is used in the START packet to easily tell the receive program who sent
@@ -86,15 +86,15 @@ class MsgStateMachineTx(object):
         src_id = int(src_id)
 
         # Create START Packet
-        msg_start = self.createstartframe(src_call, src_id, len(msg))
+        msg_start = self.createstartframe(src_call, src_id, len(file_data), str(filename))
         msg_start = self.pkt_datagram_frame.pack(self.MSG_START, msg_start)
 
         # Create END Packet
-        msg_end = self.createendframe(len(msg))
+        msg_end = self.createendframe(len(file_data))
         msg_end = self.pkt_datagram_frame.pack(self.MSG_END, msg_end)
 
         # Create DATA Packet(s)
-        list_msg_fragments = self.fragmentmsg(msg)
+        list_msg_fragments = self.fragmentmsg(file_data)
         list_data_packets = []
 
         del list_data_packets[:]  # Remove all old indexes
@@ -112,7 +112,7 @@ class MsgStateMachineTx(object):
             self.list_packets.append(list_data_packets[i])
         self.list_packets.append(msg_end)
 
-    def createstartframe(self, src_call, src_id, msg_len):
+    def createstartframe(self, src_call, src_id, file_len, filename):
         """
         This function creates a START packet (frame) that resets the receivers state machine to prepare for a new message. In
         the START frame information about the message/data is stored.
@@ -124,10 +124,10 @@ class MsgStateMachineTx(object):
         :Return: A START packet
         """
         # Calculate the number of fragmented packets
-        frag_cnt = self.fragmentcount(msg_len)
+        frag_cnt = self.fragmentcount(file_len)
         print frag_cnt
         # Create packet
-        packet = self.pkt_start.pack(src_call, len(src_call), src_id, frag_cnt)
+        packet = self.pkt_start.pack(src_call, len(src_call), src_id, frag_cnt, len(filename), filename)
         # Return packet created
         return packet
 

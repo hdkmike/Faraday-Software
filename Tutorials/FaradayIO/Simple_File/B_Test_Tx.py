@@ -24,7 +24,7 @@ f = open(filename, "rb")
 message = f.read(int(os.stat(filename).st_size))
 
 # Create message fragments
-faraday_tx_msg_sm.createmsgpackets('kb1lqd', 1, message)
+faraday_tx_msg_sm.createmsgpackets('kb1lqd', 1, message, filename)
 
 #Iterate through start, stop, and data fragment packets and transmit
 for i in range(0, len(faraday_tx_msg_sm.list_packets), 1):
