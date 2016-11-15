@@ -340,8 +340,6 @@ class MessageAppRx(object):
                 self.filesize = unpacked_packet[3]
                 self.rxfilename_length = unpacked_packet[4]
                 self.rxfilename = unpacked_packet[5]
-
-                print self.filesize, self.rxfilename_length, self.rxfilename
                 # print unpacked_packet
                 self.faraday_Rx_SM.frameassembler(255, unpacked_packet)
                 return None
@@ -356,6 +354,13 @@ class MessageAppRx(object):
                 unpacked_packet = self.pkt_end.unpack(packet[0])
                 # print unpacked_packet
                 message_assembled = self.faraday_Rx_SM.frameassembler(253, unpacked_packet)
+
+                # Save File
+                save_file = open('Received_Files/' + self.rxfilename[0:int(self.rxfilename_length)], 'wb')
+                save_file.write(repr(message_assembled['message']))
+                save_file.close()
+
+                # Return
                 return message_assembled
         except Exception, err:
             print "Fail - Exception", Exception, err

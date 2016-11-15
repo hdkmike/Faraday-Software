@@ -17,7 +17,7 @@ faraday_tx_msg_object = faraday_msg.MessageAppTx(local_device_callsign, local_de
 # Update destination callsign (not needed but here for example)
 faraday_tx_msg_object.updatedestinationstation(remote_callsign, remote_id)
 
-filename = "test.txt"
+filename = "test.zip"
 print "File size (Bytes):", os.stat(filename).st_size
 
 f = open(filename, "rb")
