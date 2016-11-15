@@ -22,7 +22,7 @@ while 1:
         print '***************************************'
         print "FROM:", rx_message_dict['source_callsign']
         print '\n'
-        print rx_message_dict['message']
+        #print rx_message_dict['message']
         print '\n***************************************'
         rx_message_dict = None
     else:
