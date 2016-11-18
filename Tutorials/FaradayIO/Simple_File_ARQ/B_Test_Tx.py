@@ -1,4 +1,6 @@
 import faraday_msg
+import os
+
 
 #Variables
 local_device_callsign = 'kb1lqd'  # Callsign of the local unit to connect to (COM port assignment)
@@ -15,15 +17,24 @@ faraday_tx_msg_object = faraday_msg.MessageAppTx(local_device_callsign, local_de
 # Update destination callsign (not needed but here for example)
 faraday_tx_msg_object.updatedestinationstation(remote_callsign, remote_id)
 
-# Create message to transmit
-message = '0123456789'*250
+filename = "test.zip"
+print "File size (Bytes):", os.stat(filename).st_size
+
+f = open(filename, "rb")
+message = f.read(int(os.stat(filename).st_size))
+
 
 # Create message fragments
-faraday_tx_msg_sm.createmsgpackets('kb1lqd', 1, message)
+faraday_tx_msg_sm.createmsgpackets('kb1lqd', 1, message, filename)
 
 #Iterate through start, stop, and data fragment packets and transmit
 for i in range(0, len(faraday_tx_msg_sm.list_packets), 1):
     print "TX:", repr(faraday_tx_msg_sm.list_packets[i])
     faraday_tx_msg_object.transmitframe(faraday_tx_msg_sm.list_packets[i])
+
+
+
+
+
 
 
