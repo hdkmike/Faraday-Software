@@ -1,14 +1,14 @@
 
-# Tutorial - Simple File
+# Tutorial - Simple File ARQ
 
-This tutorial utilizes the basic minimal text messaging application built in the previous tutorial and transfers binary data (files) instead of just text.
+This tutorial utilizes the simple file transfer program that is completely unreliable (no error detection or correction/retry) and implements a basic ARQ (automatic retry request) functionality. ARQ functionality will ensure 100% reliable transfer at the cost of retrying corrupt/lost transmissions over a longer time.
 
 ##Application Goals
 
 
 
 *  **Minimalist protocol**
-	*  Unreliable operation (No error detection, no automatic retry-request "ARQ")
+	*  Reliable operation (Error detection and automatic retry-request "ARQ")
 	*  Simple packet fragmentation and reassembly (START, DATA, END packet types)
 	*  Utlize the "Experimentatal RF Packet Forwarding" command to trade speed/optimization for easy python only programming
 
