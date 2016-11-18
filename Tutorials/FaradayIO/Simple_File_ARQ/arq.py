@@ -12,6 +12,8 @@ class ArqTransmitter(object):
     def update_transmit_data(self, next_data):
         # Update the classes current data to transmit
         self.data = next_data
+
+
     def transmit_data(self):
         # Reset ACK retry counter
         self.retry_current = 0
@@ -21,6 +23,7 @@ class ArqTransmitter(object):
 
         # Set ACK timeout timer
         self.ack_timeout_reset()
+
 
     def transmit_data_retry(self):
         # Increment ACK retry counter
@@ -35,6 +38,7 @@ class ArqTransmitter(object):
         else:
             return False
 
+
     def retry_counter_increment(self):
         if(self.retry_current < self.retry_max):
             self.retry_current += 1
@@ -43,9 +47,11 @@ class ArqTransmitter(object):
             # Retry MAX
             return False
 
+
     def ack_timeout_reset(self):
         self.ack_time_start = time.time()
         self.ack_status = False
+
 
     def ack_received(self):
         # Update ACK status
@@ -53,6 +59,7 @@ class ArqTransmitter(object):
 
         # Get the next data packet
         pass
+
 
     def ack_check(self):
         if (time.time() - self.ack_time_start) < self.ack_time_timeout:
